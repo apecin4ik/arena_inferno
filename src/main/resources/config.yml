@@ -1,0 +1,686 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║          НЕБЕСНАЯ АРЕНА ИНФЕРНО — конфигурация               ║
+# ╚══════════════════════════════════════════════════════════════╝
+# Цвета: символ & (например &4 = тёмно-красный, &8 = тёмно-серый).
+
+# ── Расписание ─────────────────────────────────────────────────
+schedule:
+  timezone: "Europe/Moscow"        # Арена появляется по МОСКОВСКОМУ времени
+  times: ["18:00"]                 # можно несколько: ["12:00", "18:00", "23:00"]
+  alert-minutes: [120, 60, 30, 1]  # за сколько минут предупреждать в чате
+
+# ── Где появляется ─────────────────────────────────────────────
+spawn:
+  world: grief-1
+  y: 112                           # высота главного приза (шулкера)
+  mode: random                     # random = случайная точка, static = всегда одна и та же
+  radius-min: -5000
+  radius-max: 5000
+  static:                          # используется при mode: static
+    x: 3928
+    z: 1270
+
+# ── Таймеры ────────────────────────────────────────────────────
+timers:
+  opening-minutes: 5               # через сколько минут после появления шулкер откроется
+  close-after-open-minutes: 20     # через сколько минут после открытия Арена исчезнет
+  remove-slow-falling-seconds: 30  # игроки, оставшиеся на Арене при исчезновении, плавно падают
+
+# ── Схематика и главный приз ───────────────────────────────────
+arena:
+  schematic: inferno_sky_arena.schem
+  prize-offset: [42, 7, 55]        # позиция шулкера внутри схематики (x, y, z)
+  size: [85, 38, 115]              # размер схематики
+  hall-inset: 11                   # отступ внутреннего зала от краёв (граница для стражей)
+  chest-material-locked: ORANGE_SHULKER_BOX
+  chest-material-unlocked: RED_SHULKER_BOX
+  inv-name: "&c🔥 &4&lНЕБЕСНЫЙ СУНДУК ИНФЕРНО &c🔥"
+  inv-size: 54
+  inv-id: inv21499                 # какая секция из inv: ниже используется как лут
+
+# ── Защита ─────────────────────────────────────────────────────
+protect:
+  break: true                      # нельзя ломать блоки Арены (кроме админов)
+  explosions: true                 # взрывы не портят Арену
+
+# ── Границы ────────────────────────────────────────────────────
+border:
+  keep-guards-inside: true         # стражи не выходят за зал и не падают вниз
+  keep-players-inside: false       # true = игроки тоже не могут покинуть Арену
+
+# ── Голограмма над шулкером ────────────────────────────────────
+hologram:
+  offset-x: 0.5
+  offset-y: 2.5
+  offset-z: 0.5
+  locked:
+    - "{name}"
+    - "&cПечать нерушима"
+    - "&7Падёт через &e{time}"
+  open:
+    - "{name}"
+    - "&4Печать пала"
+    - "&7Угаснет через &e{time}"
+
+# ── Стражи Инферно ─────────────────────────────────────────────
+# Незеритовая броня (Защита IV), незеритовый меч (Острота V + Заговор огня II), тотем в левой руке.
+# Фаза 1: 80 HP, урон 8. Когда «лопается» тотем -> Фаза 2: 60 HP, урон 10.
+guards:
+  count: 8
+  entity-type: WITHER_SKELETON     # можно ZOMBIFIED_PIGLIN, PIGLIN_BRUTE и т.д.
+  ring-radius: 14                  # кольцо вокруг шулкера, где они появляются
+  name-phase1: "&4&lСтраж Инферно"
+  name-phase2: "&4&l&nРазъярённый Страж"
+  exp: 40
+  phase1:
+    health: 80
+    damage: 8
+  phase2:
+    health: 60
+    damage: 10
+
+# ── Тексты ─────────────────────────────────────────────────────
+messages:
+  prefix: "&8[&4Инферно&8] "
+  arena-name: "&4&l☠ НЕБЕСНЫЙ СУНДУК ИНФЕРНО ☠"
+
+  alert: "{prefix}&7Небо над миром тлеет... &4Небесная Арена Инферно &7разверзнется через &c{time}&7. &8Готовь клинок и душу."
+
+  spawn:
+    - "&8&m                                                    "
+    - "&4&l☠ НЕБЕСНАЯ АРЕНА ИНФЕРНО РАЗВЕРЗЛАСЬ ☠"
+    - "&7Небеса треснули, и из пустоты вырос &4проклятый чертог&7."
+    - "&c▸ &7Координаты: &cX: &f{x} &cY: &f{y} &cZ: &f{z} &8(&7{world}&8)"
+    - "&c▸ &7Печать с шулкера падёт через &e{opening} мин&7."
+    - "&c▸ &4{guards} Стражей &7ждут тех, кто осмелится войти."
+    - "&8&m                                                    "
+  opened: "{prefix}&4Печать пала. &7Шулкер &cоткрыт&7. Арена угаснет через &e{close} мин&7. &8Поспеши, пока бездна не закрылась."
+  ended: "{prefix}&8Пламя угасло. Небесная Арена Инферно рассыпалась в пепел..."
+  prize-locked: "{prefix}&7Печать держит крышку... Подожди ещё &c{time}&7."
+  guard-enrage: "&4☠ &cТотем рассыпался в прах — Страж впал в ярость!"
+  guards-dead: "{prefix}&7Все &4Стражи &7пали. &8Бездна затаила дыхание."
+  border-players: "{prefix}&8Тьма не отпускает тебя с Арены."
+
+  bossbar-locked: "&4&l☠ ИНФЕРНО &8» &cX: &f{x} &cY: &f{y} &cZ: &f{z} &8| &7Печать: &e{time} &8| &4Стражи: &c{guards}"
+  bossbar-open: "&5&l☠ ИНФЕРНО &8» &dX: &f{x} &dY: &f{y} &dZ: &f{z} &8| &7Тьма сгустится: &e{time} &8| &4Стражи: &c{guards}"
+
+  status-idle: "&8Арена дремлет в бездне. &7Следующее явление: &c{next} &8(через &7{until}&8)"
+  status-locked: "&4Арена пылает! &cX: &f{x} &cY: &f{y} &cZ: &f{z} &8(&7{world}&8) &7Печать падёт через &e{time}"
+  status-open: "&4Печать пала! &cX: &f{x} &cY: &f{y} &cZ: &f{z} &8(&7{world}&8) &7Угаснет через &e{time}"
+
+  info:
+    - "&8&m                                                    "
+    - "&4&l☠ НЕБЕСНАЯ АРЕНА ИНФЕРНО ☠"
+    - "&7Над миром, где небеса тлеют, раз в день разверзается"
+    - "&7проклятый чертог. Лава шепчет имена павших,"
+    - "&7а его Стражи не знают пощады."
+    - " "
+    - "&c▸ &7Появление: &cкаждый день в &4&l18:00 МСК"
+    - "&c▸ &7Главный приз: &cшулкер &7— печать падёт через &e{opening} мин&7,"
+    - "&7  после чего Арена тлеет ещё &e{close} мин&7."
+    - "&c▸ &7Стражи: &4{guards} &7воинов в незеритовой броне. Берегись &4тотема&7..."
+    - " "
+    - "&7Статус: {status}"
+    - "&8&m                                                    "
+
+  # Эти строки видят ТОЛЬКО игроки с правом inferno.admin
+  info-admin:
+    - "&4&lКоманды бездны &8(только для избранных)"
+    - "&c/arena start &8— &7разжечь Арену сейчас"
+    - "&c/arena start here &8— &7разжечь Арену на твоём месте"
+    - "&c/arena stop &8— &7погасить Арену"
+    - "&c/arena reload &8— &7перечитать конфиг"
+    - "&c/arena tp &8— &7шагнуть в бездну (телепорт на Арену)"
+    - "&8&m                                                    "
+
+  admin-started: "&8[&4Инферно&8] &7Арена &cразожжена&7."
+  admin-stopped: "&8[&4Инферно&8] &7Арена &8погашена&7."
+  admin-not-active: "&8[&4Инферно&8] &7Арена сейчас &8не активна&7."
+  admin-reloaded: "&8[&4Инферно&8] &7Конфиг &cперечитан&7."
+  admin-tp: "&8[&4Инферно&8] &7Ты шагнул в &4бездну&7."
+  admin-error: "&8[&4Инферно&8] &cОшибка: &7{error}"
+  admin-only-player: "&8[&4Инферно&8] &7Эта команда доступна только игрокам."
+
+# ═══════════════════════════════════════════════════════════════
+#  ЛУТ ГЛАВНОГО ПРИЗА — без изменений (формат: слот -> шанс % -> предмет)
+# ═══════════════════════════════════════════════════════════════
+inv:
+  inv21499:
+    '0':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '1':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '2':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '3':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '4':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '5':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '6':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '7':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '8':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '9':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '10':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '11':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '12':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: TIPPED_ARROW
+        amount: 32
+        meta:
+          ==: ItemMeta
+          meta-type: POTION
+          display-name: '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"red","text":"🔥 "},{"bold":true,"italic":false,"color":"dark_red","text":"Небесная Арена Инферно "},{"bold":false,"italic":false,"color":"red","text":"🔥"}],"text":""}'
+          potion-type: minecraft:strong_harming
+    '13':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: TOTEM_OF_UNDYING
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '14':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: END_CRYSTAL
+        amount: 16
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"red","text":"🔥 "},{"bold":true,"italic":false,"color":"dark_red","text":"Небесная Арена Инферно "},{"bold":false,"italic":false,"color":"red","text":"🔥"}],"text":""}'
+    '15':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '16':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '17':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '18':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '19':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '20':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '21':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: ORANGE_SHULKER_BOX
+        meta:
+          ==: ItemMeta
+          meta-type: TILE_ENTITY
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+          blockMaterial: ORANGE_SHULKER_BOX
+    '22':
+      '3':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: PLAYER_HEAD
+        meta:
+          ==: ItemMeta
+          meta-type: SKULL
+          display-name: '{"extra":[{"bold":true,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gold","text":"Сфера Магмы"}],"text":""}'
+          lore:
+          - '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gray","text":""}],"text":""}'
+          - '{"extra":[{"bold":false,"italic":true,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gray","text":"Made with "},{"italic":false,"color":"aqua","text":"ExecutableItems"}],"text":""}'
+          enchants:
+            VANISHING_CURSE: 1
+          attribute-modifiers:
+            GENERIC_ARMOR_TOUGHNESS:
+            - ==: org.bukkit.attribute.AttributeModifier
+              amount: 3.0
+              name: '1'
+              slot: OFF_HAND
+              uuid: d8643d03-28f5-4383-aa0c-7fd62863d558
+              operation: 0
+            GENERIC_ARMOR:
+            - ==: org.bukkit.attribute.AttributeModifier
+              amount: 3.0
+              name: '&eDefault name'
+              slot: OFF_HAND
+              uuid: 4571d20d-4815-4627-83c2-dc1eff3ab60c
+              operation: 0
+            GENERIC_MAX_HEALTH:
+            - ==: org.bukkit.attribute.AttributeModifier
+              amount: -2.0
+              name: '&eDefault name'
+              slot: OFF_HAND
+              uuid: 77511ff7-bde5-4ecd-88c2-ddbc117d3b59
+              operation: 0
+            GENERIC_MOVEMENT_SPEED:
+            - ==: org.bukkit.attribute.AttributeModifier
+              amount: -0.3
+              name: '&eDefault name'
+              slot: OFF_HAND
+              uuid: c8bf6e36-6d86-43ca-b411-e7df4663f16c
+              operation: 1
+          PublicBukkitValues:
+            score:usage: 1i
+            executableitems:ei-id: sfera_magma
+          skull-owner:
+            ==: PlayerProfile
+            uniqueId: b33183ad-e9c0-4d48-8eea-f8c9358d3568
+            name: test
+            properties:
+            - name: textures
+              value: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWRiNWNlMGQ0NGMzZTgxMzhkYzJlN2U1MmMyODk3YmI4NzhlMWRiYzIyMGQ3MDY4OWM3YjZiMThkMzE3NWUwZiJ9fX0=
+    '23':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: PINK_SHULKER_BOX
+        meta:
+          ==: ItemMeta
+          meta-type: TILE_ENTITY
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+          blockMaterial: PINK_SHULKER_BOX
+    '24':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '25':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '26':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '27':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '28':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '29':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '30':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: END_CRYSTAL
+        amount: 16
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"red","text":"🔥 "},{"bold":true,"italic":false,"color":"dark_red","text":"Небесная Арена Инферно "},{"bold":false,"italic":false,"color":"red","text":"🔥"}],"text":""}'
+    '31':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: TOTEM_OF_UNDYING
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '32':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: TIPPED_ARROW
+        amount: 32
+        meta:
+          ==: ItemMeta
+          meta-type: POTION
+          display-name: '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"red","text":"🔥 "},{"bold":true,"italic":false,"color":"dark_red","text":"Небесная Арена Инферно "},{"bold":false,"italic":false,"color":"red","text":"🔥"}],"text":""}'
+          potion-type: minecraft:strong_harming
+    '33':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '34':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '35':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '36':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '37':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '38':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '39':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '40':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '41':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '42':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '43':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '44':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '45':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '46':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '47':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '48':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '49':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '50':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '51':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '52':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'
+    '53':
+      '100':
+        ==: org.bukkit.inventory.ItemStack
+        v: 3465
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: '{"text":"🔥 ","color":"red","extra":[{"text":"Небесная Арена Инферно","color":"dark_red","bold":true},{"text":" 🔥","color":"red"}]}'

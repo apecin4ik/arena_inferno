@@ -1,0 +1,16 @@
+name: InfernoArena
+version: 1.0.0
+main: ru.inferno.arena.InfernoArena
+api-version: '1.20'
+author: Inferno
+description: Небесная Арена Инферно - ежедневный ивент в небе
+softdepend: [WorldEdit, FastAsyncWorldEdit]
+commands:
+  arena:
+    description: Информация о Небесной Арене Инферно
+    usage: /arena
+    aliases: [inferno]
+permissions:
+  inferno.admin:
+    description: Админ-команды арены (start, stop, reload, tp)
+    default: op
